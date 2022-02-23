@@ -1,4 +1,11 @@
 <script lang="ts">
+  const directions = {
+    up: "🔼",
+    right: "▶️",
+    down: "🔽",
+    left: "◀️",
+  }
+
   let map: boolean[][] = Array(10)
     .fill(false)
     .map(() => Array(7).fill(false))
@@ -54,10 +61,6 @@
     players = players
   }
 
-  function onAtk() {
-    const player = players[currentPlayerIdx]
-  }
-
   function onRight() {
     const player = players[currentPlayerIdx]
     if (!walkable(player.x + 1, player.y)) {
@@ -76,6 +79,10 @@
     player.direction = "down"
     player.y = player.y + 1
     players = players
+  }
+
+  function onAtk() {
+    const player = players[currentPlayerIdx]
   }
 
   function walkable(x, y) {
@@ -97,7 +104,11 @@
             class={`h-12 w-12 border border-black ${hole ? "bg-gray-900" : ""}`}
           >
             {#if player}
-              <div class={`w-full h-full ${player.color}`} />
+              <div
+                class={`w-full h-full ${player.color} flex items-center justify-center text-3xl`}
+              >
+                {directions[player.direction]}
+              </div>
             {/if}
           </span>
         {/each}
