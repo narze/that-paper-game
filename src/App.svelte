@@ -9,18 +9,30 @@
 
   map[0] = map[0].map((_cell) => true)
   map[map.length - 1] = map[map.length - 1].map((_cell) => true)
+
+  let players = [
+    { x: 1, y: 2, direction: "right", color: "bg-lime-500" },
+    { x: 5, y: 3, direction: "left", color: "bg-red-500" },
+  ]
 </script>
 
 <main>
   <h1>That Paper Game</h1>
 
   <div class="board flex flex-col items-center">
-    {#each map as row}
+    {#each map as row, rowIdx}
       <div class="flex">
-        {#each row as cell}
+        {#each row as cell, cellIdx}
+          {@const player = players.filter(
+            (p) => p.x === cellIdx && p.y === rowIdx
+          )[0]}
           <span
             class={`h-12 w-12 border border-black ${cell ? "bg-gray-900" : ""}`}
-          />
+          >
+            {#if player}
+              <div class={`w-full h-full ${player.color}`} />
+            {/if}
+          </span>
         {/each}
       </div>
     {/each}
