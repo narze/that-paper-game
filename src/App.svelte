@@ -83,6 +83,50 @@
 
   function onAtk() {
     const player = players[currentPlayerIdx]
+    let targetIdx
+
+    switch (player.direction) {
+      case "up":
+        targetIdx = players.findIndex(
+          (p) => p.x === player.x && p.y === player.y - 1
+        )
+        if (targetIdx != -1) {
+          //TODO: Reduce hp
+          players[targetIdx].y -= 1
+          players = players
+        }
+        break
+      case "right":
+        targetIdx = players.findIndex(
+          (p) => p.x === player.x + 1 && p.y === player.y
+        )
+        if (targetIdx != -1) {
+          //TODO: Reduce hp
+          players[targetIdx].x += 1
+          players = players
+        }
+        break
+      case "down":
+        targetIdx = players.findIndex(
+          (p) => p.x === player.x && p.y === player.y + 1
+        )
+        if (targetIdx != -1) {
+          //TODO: Reduce hp
+          players[targetIdx].y += 1
+          players = players
+        }
+        break
+      case "left":
+        targetIdx = players.findIndex(
+          (p) => p.x === player.x - 1 && p.y === player.y
+        )
+        if (targetIdx != -1) {
+          //TODO: Reduce hp
+          players[targetIdx].x -= 1
+          players = players
+        }
+        break
+    }
   }
 
   function walkable(x, y) {
