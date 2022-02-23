@@ -1,29 +1,36 @@
 <script lang="ts">
-  import logo from './assets/svelte.png'
-  import Counter from './lib/Counter.svelte'
+  import logo from "./assets/svelte.png"
+  import Counter from "./lib/Counter.svelte"
+
+  let map: boolean[][] = Array(10)
+    .fill(false)
+    .map(() => Array(7).fill(false))
+    .map((a) => [true, ...a, true])
+
+  map[0] = map[0].map((_cell) => true)
+  map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 </script>
 
 <main>
-  <img src={logo} alt="Svelte Logo" />
-  <h1>Hello Typescript!</h1>
+  <h1>That Paper Game</h1>
 
-  <Counter />
-
-  <p>
-    Visit <a href="https://svelte.dev">svelte.dev</a> to learn how to build Svelte
-    apps.
-  </p>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme">SvelteKit</a> for
-    the officially supported framework, also powered by Vite!
-  </p>
+  <div class="board flex flex-col items-center">
+    {#each map as row}
+      <div class="flex">
+        {#each row as cell}
+          <span
+            class={`h-12 w-12 border border-black ${cell ? "bg-gray-900" : ""}`}
+          />
+        {/each}
+      </div>
+    {/each}
+  </div>
 </main>
 
 <style>
   :root {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-      Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   }
 
   main {
@@ -41,7 +48,6 @@
     color: #ff3e00;
     text-transform: uppercase;
     font-size: 4rem;
-    font-weight: 100;
     line-height: 1.1;
     margin: 2rem auto;
     max-width: 14rem;
