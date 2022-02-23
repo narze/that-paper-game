@@ -23,6 +23,8 @@
     currentPlayerIdx = players.length - 1
   }
 
+  $: currentPlayer = players[currentPlayerIdx]
+
   $: mapWithPlayers = map.map((row, y) =>
     row.map((hole, x) => ({
       x,
@@ -34,17 +36,21 @@
 
   function onUp() {
     const player = players[currentPlayerIdx]
+    if (!walkable(player.x, player.y - 1)) {
+      return
+    }
     player.direction = "up"
-    player.x = player.x
     player.y = player.y - 1
     players = players
   }
 
   function onLeft() {
     const player = players[currentPlayerIdx]
+    if (!walkable(player.x - 1, player.y)) {
+      return
+    }
     player.direction = "left"
     player.x = player.x - 1
-    player.y = player.y
     players = players
   }
 
@@ -54,18 +60,29 @@
 
   function onRight() {
     const player = players[currentPlayerIdx]
+    if (!walkable(player.x + 1, player.y)) {
+      return
+    }
     player.direction = "right"
     player.x = player.x + 1
-    player.y = player.y
     players = players
   }
 
   function onDown() {
     const player = players[currentPlayerIdx]
+    if (!walkable(player.x, player.y + 1)) {
+      return
+    }
     player.direction = "down"
-    player.x = player.x
     player.y = player.y + 1
     players = players
+  }
+
+  function walkable(x, y) {
+    if (mapWithPlayers[y]?.[x].hole) return false
+    if (mapWithPlayers[y]?.[x].player) return false
+
+    return true
   }
 </script>
 
@@ -94,16 +111,20 @@
         <span class="w-16 h-16" />
         <button
           on:click={onUp}
-          class="w-16 h-16 border rounded flex items-center justify-center"
-          >Up</button
+          disabled={!walkable(currentPlayer.x, currentPlayer.y - 1)}
+          class={`w-16 h-16 border rounded flex items-center justify-center ${
+            walkable(currentPlayer.x, currentPlayer.y - 1) ? "" : "bg-gray-500"
+          }`}>Up</button
         >
         <span class="w-16 h-16" />
       </div>
       <div class="flex">
         <button
           on:click={onLeft}
-          class="w-16 h-16 border rounded flex items-center justify-center"
-          >Left</button
+          disabled={!walkable(currentPlayer.x - 1, currentPlayer.y)}
+          class={`w-16 h-16 border rounded flex items-center justify-center ${
+            walkable(currentPlayer.x - 1, currentPlayer.y) ? "" : "bg-gray-500"
+          }`}>Left</button
         >
         <button
           on:click={onAtk}
@@ -112,16 +133,20 @@
         >
         <button
           on:click={onRight}
-          class="w-16 h-16 border rounded flex items-center justify-center"
-          >Right</button
+          disabled={!walkable(currentPlayer.x + 1, currentPlayer.y)}
+          class={`w-16 h-16 border rounded flex items-center justify-center ${
+            walkable(currentPlayer.x + 1, currentPlayer.y) ? "" : "bg-gray-500"
+          }`}>Right</button
         >
       </div>
       <div class="flex">
         <span class="w-16 h-16" />
         <button
           on:click={onDown}
-          class="w-16 h-16 border rounded flex items-center justify-center"
-          >Down</button
+          disabled={!walkable(currentPlayer.x, currentPlayer.y + 1)}
+          class={`w-16 h-16 border rounded flex items-center justify-center ${
+            walkable(currentPlayer.x, currentPlayer.y + 1) ? "" : "bg-gray-500"
+          }`}>Down</button
         >
         <span class="w-16 h-16" />
       </div>
