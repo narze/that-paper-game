@@ -6,10 +6,10 @@
 
 - [ ] Game Mechanics
   - [ ] Player choose spawn location
-  - [ ] Living players take turns
-  - [ ] Dice rolling, walk, attack, end turn
-  - [ ] Attack reduces HP
-  - [ ] Instakill attack (Push player to the hole)
+  - [x] Living players take turns
+  - [x] Dice rolling, walk, attack, end turn
+  - [x] Attack reduces HP
+  - [x] Instakill attack (Push player to the hole)
 - [ ] Online Multiplayer
 - [ ] Randomly generated map / map presets
 - [ ] Replays
@@ -17,7 +17,8 @@
 
 ## DevLog (Thai)
 
-- #1 https://www.youtube.com/watch?v=JKxgj7dfXgk
+- #1 https://youtu.be/JKxgj7dfXgk
+- #2 https://youtu.be/vx8gFEcErrg
 
 ## Reference
 
