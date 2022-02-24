@@ -15,9 +15,9 @@
   map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 
   let players = [
-    { x: 1, y: 2, direction: "right", color: "bg-lime-500" },
-    { x: 5, y: 3, direction: "left", color: "bg-red-500" },
-    { x: 4, y: 8, direction: "left", color: "bg-blue-500" },
+    { x: 1, y: 2, direction: "right", color: "bg-lime-500", name: "A" },
+    { x: 5, y: 3, direction: "left", color: "bg-red-500", name: "B" },
+    { x: 4, y: 8, direction: "left", color: "bg-blue-500", name: "C" },
   ]
 
   let currentPlayerIdx = 1
@@ -147,6 +147,8 @@
         }
         break
     }
+
+    endTurn()
   }
 
   function walkable(x, y) {
@@ -167,6 +169,13 @@
     players[currentPlayerIdx] = { ...currentPlayerBeforeMove }
     distance = 0
     players = players
+  }
+
+  function endTurn() {
+    currentPlayerIdx = (currentPlayerIdx + 1) % players.length
+    rolled = false
+    distance = 0
+    maxDistance = 0
   }
 </script>
 
@@ -194,7 +203,16 @@
   </div>
 
   <div class="controls flex justify-center mt-12">
-    <div class="flex flex-col">
+    <div class="players">
+      {#each players as player, idx}
+        <div class={`px-3 py-1 mt-1 ${player.color} text-left`}>
+          {player.name}
+          {currentPlayerIdx == idx ? "*" : ""}
+        </div>
+      {/each}
+    </div>
+
+    <div class="flex flex-col ml-12">
       <div class="flex">
         <span class="w-16 h-16" />
         <button
@@ -242,7 +260,7 @@
       <button on:click={rollDice} disabled={rolled} class="btn">Roll</button>
       <button on:click={resetWalk} disabled={!rolled} class="btn">Reset</button>
 
-      {#if maxDistance != undefined}
+      {#if rolled}
         <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
       {/if}
     </div>
