@@ -21,8 +21,9 @@
   ]
 
   let currentPlayerIdx = 1
-  let maxDistance
+  let maxDistance = 0
   let distance = 0
+  let rolled = false
 
   $: if (currentPlayerIdx < 0) {
     currentPlayerIdx = 0
@@ -42,6 +43,14 @@
       player: players.find((player) => player.x === x && player.y === y),
     }))
   )
+
+  $: attackable = rolled && distance == maxDistance
+  $: canWalk = {
+    up: rolled && walkable(currentPlayer.x, currentPlayer.y - 1),
+    down: rolled && walkable(currentPlayer.x, currentPlayer.y + 1),
+    left: rolled && walkable(currentPlayer.x - 1, currentPlayer.y),
+    right: rolled && walkable(currentPlayer.x + 1, currentPlayer.y),
+  }
 
   function onUp() {
     const player = players[currentPlayerIdx]
@@ -88,6 +97,10 @@
   }
 
   function onAtk() {
+    if (!attackable) {
+      return
+    }
+
     const player = players[currentPlayerIdx]
     let targetIdx
 
@@ -145,6 +158,7 @@
 
   function rollDice() {
     maxDistance = ~~(Math.random() * 6) + 1
+    rolled = true
   }
 </script>
 
@@ -177,49 +191,47 @@
         <span class="w-16 h-16" />
         <button
           on:click={onUp}
-          disabled={!walkable(currentPlayer.x, currentPlayer.y - 1)}
-          class={`w-16 h-16 border rounded flex items-center justify-center ${
-            walkable(currentPlayer.x, currentPlayer.y - 1) ? "" : "bg-gray-500"
-          }`}>Up</button
+          disabled={!canWalk["up"]}
+          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+          >Up</button
         >
         <span class="w-16 h-16" />
       </div>
       <div class="flex">
         <button
           on:click={onLeft}
-          disabled={!walkable(currentPlayer.x - 1, currentPlayer.y)}
-          class={`w-16 h-16 border rounded flex items-center justify-center ${
-            walkable(currentPlayer.x - 1, currentPlayer.y) ? "" : "bg-gray-500"
-          }`}>Left</button
+          disabled={!canWalk["left"]}
+          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+          >Left</button
         >
         <button
           on:click={onAtk}
-          class="w-16 h-16 border rounded flex items-center justify-center"
-          >Atk</button
+          disabled={!attackable}
+          class={`btn w-16 h-16 border rounded flex items-center justify-center ${
+            !attackable ? "btn-disabled" : ""
+          }`}>Atk</button
         >
         <button
           on:click={onRight}
-          disabled={!walkable(currentPlayer.x + 1, currentPlayer.y)}
-          class={`w-16 h-16 border rounded flex items-center justify-center ${
-            walkable(currentPlayer.x + 1, currentPlayer.y) ? "" : "bg-gray-500"
-          }`}>Right</button
+          disabled={!canWalk["right"]}
+          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+          >Right</button
         >
       </div>
       <div class="flex">
         <span class="w-16 h-16" />
         <button
           on:click={onDown}
-          disabled={!walkable(currentPlayer.x, currentPlayer.y + 1)}
-          class={`w-16 h-16 border rounded flex items-center justify-center ${
-            walkable(currentPlayer.x, currentPlayer.y + 1) ? "" : "bg-gray-500"
-          }`}>Down</button
+          disabled={!canWalk["down"]}
+          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+          >Down</button
         >
         <span class="w-16 h-16" />
       </div>
     </div>
 
     <div class="ml-8 flex flex-col">
-      <button on:click={rollDice} class="btn">Roll</button>
+      <button on:click={rollDice} disabled={rolled} class="btn">Roll</button>
 
       {#if maxDistance != undefined}
         <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
