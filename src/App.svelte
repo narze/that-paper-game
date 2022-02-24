@@ -6,21 +6,21 @@
     left: "◀️",
   }
 
-  let map: boolean[][] = Array(10)
+  let map: boolean[][] = Array(8)
     .fill(false)
-    .map(() => Array(7).fill(false))
+    .map(() => Array(5).fill(false))
     .map((a) => [true, ...a, true])
 
   map[0] = map[0].map((_cell) => true)
   map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 
   let players = [
-    { x: 1, y: 2, direction: "right", color: "bg-lime-500", name: "A", hp: 5 },
-    { x: 5, y: 3, direction: "left", color: "bg-red-500", name: "B", hp: 5 },
-    { x: 4, y: 8, direction: "left", color: "bg-blue-500", name: "C", hp: 5 },
+    { x: 2, y: 2, direction: "right", color: "bg-lime-500", name: "A", hp: 5 },
+    { x: 3, y: 5, direction: "left", color: "bg-red-500", name: "B", hp: 5 },
+    { x: 4, y: 3, direction: "left", color: "bg-blue-500", name: "C", hp: 5 },
   ]
 
-  let currentPlayerIdx = 1
+  let currentPlayerIdx = 0
   let maxDistance = 0
   let distance = 0
   let rolled = false
@@ -267,9 +267,9 @@
     </div>
   </div>
 
-  <div class="players flex justify-center mt-8">
+  <!-- <div class="players flex justify-center mt-8">
     <input type="number" bind:value={currentPlayerIdx} />
-  </div>
+  </div> -->
 </main>
 
 <style>
