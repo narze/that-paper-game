@@ -25,6 +25,13 @@
   let distance = 0
   let rolled = false
   let currentPlayerBeforeMove
+  let gameEnded = false
+
+  $: if (players.filter((p) => p.hp > 0).length === 1) {
+    const winner = players.filter((p) => p.hp > 0)[0]
+    alert(`${winner.name} won!`)
+    gameEnded = true
+  }
 
   $: if (currentPlayerIdx < 0) {
     currentPlayerIdx = 0
@@ -41,9 +48,16 @@
       x,
       y,
       hole,
-      player: players.find((player) => player.x === x && player.y === y),
+      player: players.find(
+        (player) => player.x === x && player.y === y && player.hp > 0
+      ),
     }))
   )
+
+  $: isDead = currentPlayer.hp <= 0
+  $: if (isDead) {
+    endTurn()
+  }
 
   $: attackable = rolled && distance == maxDistance
   $: canWalk = {
@@ -113,6 +127,7 @@
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
           players[targetIdx].y -= 1
+          checkPlayerInHole(targetIdx)
           players = players
         }
         break
@@ -123,6 +138,7 @@
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
           players[targetIdx].x += 1
+          checkPlayerInHole(targetIdx)
           players = players
         }
         break
@@ -133,6 +149,7 @@
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
           players[targetIdx].y += 1
+          checkPlayerInHole(targetIdx)
           players = players
         }
         break
@@ -143,12 +160,21 @@
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
           players[targetIdx].x -= 1
+          checkPlayerInHole(targetIdx)
           players = players
         }
         break
     }
 
     endTurn()
+  }
+
+  function checkPlayerInHole(playerIdx) {
+    const player = players[playerIdx]
+
+    if (map[player.y]?.[player.x] == true) {
+      players[playerIdx].hp = 0
+    }
   }
 
   function walkable(x, y) {
@@ -176,6 +202,15 @@
     rolled = false
     distance = 0
     maxDistance = 0
+  }
+
+  function restartGame() {
+    currentPlayerIdx = 0
+    rolled = false
+    distance = 0
+    maxDistance = 0
+    players = players.map((p) => ({ ...p, hp: 5 }))
+    gameEnded = false
   }
 </script>
 
@@ -205,7 +240,11 @@
   <div class="controls flex justify-center mt-12">
     <div class="players">
       {#each players as player, idx}
-        <div class={`px-3 py-1 mt-1 ${player.color} text-left`}>
+        <div
+          class={`px-3 py-1 mt-1 text-left ${player.color} ${
+            player.hp <= 0 ? "line-through" : ""
+          }`}
+        >
           {player.name}
           {player.hp}
           {currentPlayerIdx == idx ? "*" : ""}
@@ -267,9 +306,11 @@
     </div>
   </div>
 
-  <!-- <div class="players flex justify-center mt-8">
-    <input type="number" bind:value={currentPlayerIdx} />
-  </div> -->
+  {#if gameEnded}
+    <div class="flex justify-center mt-8">
+      <button class="btn" on:click={restartGame}>Restart</button>
+    </div>
+  {/if}
 </main>
 
 <style>
