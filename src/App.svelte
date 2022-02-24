@@ -21,6 +21,8 @@
   ]
 
   let currentPlayerIdx = 1
+  let maxDistance
+  let distance = 0
 
   $: if (currentPlayerIdx < 0) {
     currentPlayerIdx = 0
@@ -48,6 +50,7 @@
     }
     player.direction = "up"
     player.y = player.y - 1
+    distance += 1
     players = players
   }
 
@@ -58,6 +61,7 @@
     }
     player.direction = "left"
     player.x = player.x - 1
+    distance += 1
     players = players
   }
 
@@ -68,6 +72,7 @@
     }
     player.direction = "right"
     player.x = player.x + 1
+    distance += 1
     players = players
   }
 
@@ -78,6 +83,7 @@
     }
     player.direction = "down"
     player.y = player.y + 1
+    distance += 1
     players = players
   }
 
@@ -130,10 +136,15 @@
   }
 
   function walkable(x, y) {
+    if (distance >= maxDistance) return false
     if (mapWithPlayers[y]?.[x].hole) return false
     if (mapWithPlayers[y]?.[x].player) return false
 
     return true
+  }
+
+  function rollDice() {
+    maxDistance = ~~(Math.random() * 6) + 1
   }
 </script>
 
@@ -205,6 +216,14 @@
         >
         <span class="w-16 h-16" />
       </div>
+    </div>
+
+    <div class="ml-8 flex flex-col">
+      <button on:click={rollDice} class="btn">Roll</button>
+
+      {#if maxDistance != undefined}
+        <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
+      {/if}
     </div>
   </div>
 
