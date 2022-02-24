@@ -15,9 +15,9 @@
   map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 
   let players = [
-    { x: 1, y: 2, direction: "right", color: "bg-lime-500", name: "A" },
-    { x: 5, y: 3, direction: "left", color: "bg-red-500", name: "B" },
-    { x: 4, y: 8, direction: "left", color: "bg-blue-500", name: "C" },
+    { x: 1, y: 2, direction: "right", color: "bg-lime-500", name: "A", hp: 5 },
+    { x: 5, y: 3, direction: "left", color: "bg-red-500", name: "B", hp: 5 },
+    { x: 4, y: 8, direction: "left", color: "bg-blue-500", name: "C", hp: 5 },
   ]
 
   let currentPlayerIdx = 1
@@ -111,7 +111,7 @@
           (p) => p.x === player.x && p.y === player.y - 1
         )
         if (targetIdx != -1) {
-          //TODO: Reduce hp
+          players[targetIdx].hp -= 1
           players[targetIdx].y -= 1
           players = players
         }
@@ -121,7 +121,7 @@
           (p) => p.x === player.x + 1 && p.y === player.y
         )
         if (targetIdx != -1) {
-          //TODO: Reduce hp
+          players[targetIdx].hp -= 1
           players[targetIdx].x += 1
           players = players
         }
@@ -131,7 +131,7 @@
           (p) => p.x === player.x && p.y === player.y + 1
         )
         if (targetIdx != -1) {
-          //TODO: Reduce hp
+          players[targetIdx].hp -= 1
           players[targetIdx].y += 1
           players = players
         }
@@ -141,7 +141,7 @@
           (p) => p.x === player.x - 1 && p.y === player.y
         )
         if (targetIdx != -1) {
-          //TODO: Reduce hp
+          players[targetIdx].hp -= 1
           players[targetIdx].x -= 1
           players = players
         }
@@ -207,6 +207,7 @@
       {#each players as player, idx}
         <div class={`px-3 py-1 mt-1 ${player.color} text-left`}>
           {player.name}
+          {player.hp}
           {currentPlayerIdx == idx ? "*" : ""}
         </div>
       {/each}
