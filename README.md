@@ -15,6 +15,10 @@
 - [ ] Replays
 - [ ] etc.
 
+## DevLog (Thai)
+
+- #1 https://www.youtube.com/watch?v=JKxgj7dfXgk
+
 ## Reference
 
 [BossKerati - เล่นเกมในกระดาษ!](https://www.youtube.com/watch?v=B2nDdmw3ZHs)
