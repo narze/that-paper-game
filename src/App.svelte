@@ -24,6 +24,7 @@
   let maxDistance = 0
   let distance = 0
   let rolled = false
+  let currentPlayerBeforeMove
 
   $: if (currentPlayerIdx < 0) {
     currentPlayerIdx = 0
@@ -157,14 +158,21 @@
   }
 
   function rollDice() {
+    currentPlayerBeforeMove = { ...currentPlayer }
     maxDistance = ~~(Math.random() * 6) + 1
     rolled = true
+  }
+
+  function resetWalk() {
+    players[currentPlayerIdx] = { ...currentPlayerBeforeMove }
+    distance = 0
+    players = players
   }
 </script>
 
 <main>
   <h1>That Paper Game</h1>
-
+  <!-- {JSON.stringify(currentPlayerBeforeMove)} -->
   <div class="board flex flex-col items-center">
     {#each mapWithPlayers as row, rowIdx}
       <div class="flex">
@@ -232,6 +240,7 @@
 
     <div class="ml-8 flex flex-col">
       <button on:click={rollDice} disabled={rolled} class="btn">Roll</button>
+      <button on:click={resetWalk} disabled={!rolled} class="btn">Reset</button>
 
       {#if maxDistance != undefined}
         <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
