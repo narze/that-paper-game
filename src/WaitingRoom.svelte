@@ -6,7 +6,7 @@
   import { player } from "./lib/player-store"
 
   export let store: typeof svelteStore
-  export let startGame: () => void
+  export let nextState: () => void
 
   const playerId = $player.id
 
@@ -79,7 +79,7 @@
       <button
         class="btn btn-primary"
         disabled={!canStartGame}
-        on:click={startGame}
+        on:click={nextState}
       >
         Start Game!
       </button>

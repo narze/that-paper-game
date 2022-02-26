@@ -41,18 +41,18 @@
   }
 
   $: if ($connected && createRoom && !enteredRoom) {
-    createRoom ? !$connected : !$synced
-    console.log("Auto enter room (creator)")
+    // console.log("Auto enter room (creator)")
     enter()
   }
 
   $: if ($connected && !createRoom && $synced && !enteredRoom) {
-    console.log("Auto enter room (joiners)")
+    // console.log("Auto enter room (joiners)")
     enter()
   }
 
-  function startGame() {
-    $svelteStore.gameData.state = GameState.Prepare
+  function nextState() {
+    $svelteStore.gameData.state =
+      (gameState + 1) % Object.keys(GameState).length
   }
 
   // TODO: Move to Game Component
@@ -294,8 +294,9 @@
     > -->
   {:else}
     {#if gameState == GameState.Waiting}
-      <WaitingRoom store={svelteStore} {startGame} />
+      <WaitingRoom store={svelteStore} {nextState} />
     {:else if gameState == GameState.Prepare}
+      <!-- <PrepareMap store={svelteStore} {nextState} /> -->
       TODO: Prepare the game...
     {:else if gameState == GameState.Start}
       TODO: Start the game...
