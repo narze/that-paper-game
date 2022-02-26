@@ -11,6 +11,13 @@ interface RoomPlayer {
   enteredAt: number
 }
 
+export enum GameState {
+  Waiting,
+  Prepare,
+  Start,
+  Ended,
+}
+
 // Create your SyncedStore store
 export const store = syncedStore({
   todos: [],
@@ -55,6 +62,7 @@ export const connectRoom = (roomId: string) => {
     if (webrtcProvider.connected) {
       // webrtcProvider.doc.on("update", () => {
       //   console.log("doc updated")
+      //   connected.set(true)
       // })
       // webrtcProvider.doc
       //   .getMap("tmp")

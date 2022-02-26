@@ -3,11 +3,14 @@
 
   import Room from "./Room.svelte"
   import url from "./lib/url"
-  let roomId = ""
+
+  $: roomFragment = $url.hash.split(["#/rooms/"])[1]
+  $: roomId = roomFragment?.split("/")[0]
+  $: createRoom = roomFragment?.split("/")[1] == "create"
 
   function createNewRoom() {
     const newRoomId = nanoid()
-    window.location.hash = `#/rooms/${newRoomId}`
+    window.location.hash = `#/rooms/${newRoomId}/create`
   }
 
   function joinRoom() {
@@ -16,7 +19,7 @@
 </script>
 
 {#if $url.hash.indexOf("#/rooms/") === 0 || $url.hash === "#/"}
-  <Room roomId={$url.hash.split(["#/rooms/"])[1]} />
+  <Room {roomId} {createRoom} />
 {:else}
   <main
     class="flex flex-col gap-4 container max-w-xl mx-auto items-center p-12"

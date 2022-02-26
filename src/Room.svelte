@@ -6,25 +6,23 @@
     peers,
     connected,
     connectRoom,
+    GameState,
   } from "./lib/synced-store"
+  import url from "./lib/url"
+
   import { player } from "./lib/player-store"
+  import WaitingRoom from "./WaitingRoom.svelte"
 
   export let roomId = ""
+  export let createRoom: boolean
 
   const webrtcProvider = connectRoom(roomId)
 
-  enum GameState {
-    Waiting,
-    Prepare,
-    Start,
-    Ended,
-  }
-
-  let gameState: GameState = GameState.Waiting
+  $: gameState = $svelteStore.gameData.state || GameState.Waiting
 
   const playerId = $player.id
 
-  $: roomPlayers = Object.values($svelteStore.roomPlayers)
+  // $: roomPlayers = Object.values($svelteStore.roomPlayers)
 
   let enteredRoom = false
 
@@ -38,34 +36,26 @@
       admin: false,
       enteredAt: new Date().getTime(),
     }
+
+    window.location.hash = `#/rooms/${roomId}`
   }
 
-  $: isRoomOwner =
-    roomPlayers.length &&
-    ($svelteStore.roomPlayers[playerId]?.admin ||
-      roomPlayers.sort((a, b) => a.enteredAt - b.enteredAt)[0].id == playerId)
-
-  $: canStartGame =
-    isRoomOwner &&
-    Object.keys($svelteStore.roomPlayers).length > 1 &&
-    Object.values($svelteStore.roomPlayers).every((p) => p.ready)
-
-  function leaveRoom() {
-    delete $svelteStore.roomPlayers[playerId]
+  $: if ($connected && createRoom && !enteredRoom) {
+    createRoom ? !$connected : !$synced
+    console.log("Auto enter room (creator)")
+    enter()
   }
 
-  onDestroy(() => {
-    leaveRoom()
-  })
-
-  window.onbeforeunload = () => {
-    leaveRoom()
+  $: if ($connected && !createRoom && $synced && !enteredRoom) {
+    console.log("Auto enter room (joiners)")
+    enter()
   }
 
-  // onMount(() => {
-  //   localStorage.log = "y-webrtc"
-  // })
+  function startGame() {
+    $svelteStore.gameData.state = GameState.Prepare
+  }
 
+  // TODO: Move to Game Component
   const directions = {
     up: "🔼",
     right: "▶️",
@@ -294,49 +284,23 @@
   player: {JSON.stringify(player)}
   roomPlayers: {JSON.stringify($svelteStore.roomPlayers, null, 2)}
   </pre> -->
-  {#if !$connected}
+  {#if !$connected || !enteredRoom}
     <div>Loading...</div>
-  {:else if !enteredRoom}
-    <button class="btn" on:click={enter}>Enter</button>
+    <!-- {:else if !enteredRoom} -->
+    <!-- <button
+      class="btn"
+      on:click={enter}
+      disabled={createRoom ? !$connected : !$synced}>Enter</button
+    > -->
   {:else}
     {#if gameState == GameState.Waiting}
-      <div class="waiting">
-        <h2 class="text-xl">Waiting</h2>
-        <span>
-          Name:<input
-            type="text"
-            class="input input-bordered"
-            bind:value={$svelteStore.roomPlayers[playerId].name}
-          />
-        </span>
-        <span>
-          Ready:
-          <input
-            type="checkbox"
-            bind:checked={$svelteStore.roomPlayers[playerId].ready}
-            class="checkbox"
-          />
-        </span>
-
-        <div>
-          Players
-
-          {#each Object.entries($svelteStore.roomPlayers) as [playerId, player]}
-            <div class="player">
-              {player.name} :
-              {player.ready ? "Ready" : "Not Ready"}
-            </div>
-          {/each}
-        </div>
-
-        {#if isRoomOwner}
-          <div>
-            <button class="btn btn-primary" disabled={!canStartGame}>
-              Start Game!
-            </button>
-          </div>
-        {/if}
-      </div>
+      <WaitingRoom store={svelteStore} {startGame} />
+    {:else if gameState == GameState.Prepare}
+      TODO: Prepare the game...
+    {:else if gameState == GameState.Start}
+      TODO: Start the game...
+    {:else if gameState == GameState.Ended}
+      TODO: Show the result of the game...
     {/if}
 
     <!-- {JSON.stringify(currentPlayerBeforeMove)} -->
