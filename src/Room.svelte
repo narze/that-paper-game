@@ -1,4 +1,71 @@
 <script lang="ts">
+  import { onMount, onDestroy } from "svelte"
+  import {
+    svelteStore,
+    synced,
+    peers,
+    connected,
+    connectRoom,
+  } from "./lib/synced-store"
+  import { player } from "./lib/player-store"
+
+  export let roomId = ""
+
+  const webrtcProvider = connectRoom(roomId)
+
+  enum GameState {
+    Waiting,
+    Prepare,
+    Start,
+    Ended,
+  }
+
+  let gameState: GameState = GameState.Waiting
+
+  const playerId = $player.id
+
+  $: roomPlayers = Object.values($svelteStore.roomPlayers)
+
+  let enteredRoom = false
+
+  function enter() {
+    enteredRoom = true
+
+    $svelteStore.roomPlayers[playerId] = {
+      id: playerId,
+      name: $player.name,
+      ready: false,
+      admin: false,
+      enteredAt: new Date().getTime(),
+    }
+  }
+
+  $: isRoomOwner =
+    roomPlayers.length &&
+    ($svelteStore.roomPlayers[playerId]?.admin ||
+      roomPlayers.sort((a, b) => a.enteredAt - b.enteredAt)[0].id == playerId)
+
+  $: canStartGame =
+    isRoomOwner &&
+    Object.keys($svelteStore.roomPlayers).length > 1 &&
+    Object.values($svelteStore.roomPlayers).every((p) => p.ready)
+
+  function leaveRoom() {
+    delete $svelteStore.roomPlayers[playerId]
+  }
+
+  onDestroy(() => {
+    leaveRoom()
+  })
+
+  window.onbeforeunload = () => {
+    leaveRoom()
+  }
+
+  // onMount(() => {
+  //   localStorage.log = "y-webrtc"
+  // })
+
   const directions = {
     up: "🔼",
     right: "▶️",
@@ -20,6 +87,8 @@
     { x: 4, y: 3, direction: "left", color: "bg-blue-500", name: "C", hp: 5 },
   ]
 
+  $: players = $svelteStore.players || players
+
   let currentPlayerIdx = 0
   let maxDistance = 0
   let distance = 0
@@ -29,7 +98,7 @@
 
   $: if (players.filter((p) => p.hp > 0).length === 1) {
     const winner = players.filter((p) => p.hp > 0)[0]
-    alert(`${winner.name} won!`)
+    // alert(`${winner.name} won!`)
     gameEnded = true
   }
 
@@ -54,7 +123,7 @@
     }))
   )
 
-  $: isDead = currentPlayer.hp <= 0
+  $: isDead = currentPlayer && currentPlayer.hp <= 0
   $: if (isDead) {
     endTurn()
   }
@@ -216,100 +285,159 @@
 
 <main>
   <h1>That Paper Game</h1>
-  <!-- {JSON.stringify(currentPlayerBeforeMove)} -->
-  <div class="board flex flex-col items-center">
-    {#each mapWithPlayers as row, rowIdx}
-      <div class="flex">
-        {#each row as { x, y, hole, player }, cellIdx}
-          <span
-            class={`h-12 w-12 border border-black ${hole ? "bg-gray-900" : ""}`}
-          >
-            {#if player}
-              <div
-                class={`w-full h-full ${player.color} flex items-center justify-center text-3xl`}
-              >
-                {directions[player.direction]}
-              </div>
-            {/if}
-          </span>
-        {/each}
-      </div>
-    {/each}
-  </div>
 
-  <div class="controls flex justify-center mt-12">
-    <div class="players">
-      {#each players as player, idx}
-        <div
-          class={`px-3 py-1 mt-1 text-left ${player.color} ${
-            player.hp <= 0 ? "line-through" : ""
-          }`}
-        >
-          {player.name}
-          {player.hp}
-          {currentPlayerIdx == idx ? "*" : ""}
+  <p>Room ID: {roomId}</p>
+
+  <!-- <pre class="text-left">
+    $svelteStore : {JSON.stringify($svelteStore, null, 2)}
+  playerIds count : {Object.keys($svelteStore.roomPlayers).length}
+  player: {JSON.stringify(player)}
+  roomPlayers: {JSON.stringify($svelteStore.roomPlayers, null, 2)}
+  </pre> -->
+  {#if !$connected}
+    <div>Loading...</div>
+  {:else if !enteredRoom}
+    <button class="btn" on:click={enter}>Enter</button>
+  {:else}
+    {#if gameState == GameState.Waiting}
+      <div class="waiting">
+        <h2 class="text-xl">Waiting</h2>
+        <span>
+          Name:<input
+            type="text"
+            class="input input-bordered"
+            bind:value={$svelteStore.roomPlayers[playerId].name}
+          />
+        </span>
+        <span>
+          Ready:
+          <input
+            type="checkbox"
+            bind:checked={$svelteStore.roomPlayers[playerId].ready}
+            class="checkbox"
+          />
+        </span>
+
+        <div>
+          Players
+
+          {#each Object.entries($svelteStore.roomPlayers) as [playerId, player]}
+            <div class="player">
+              {player.name} :
+              {player.ready ? "Ready" : "Not Ready"}
+            </div>
+          {/each}
+        </div>
+
+        {#if isRoomOwner}
+          <div>
+            <button class="btn btn-primary" disabled={!canStartGame}>
+              Start Game!
+            </button>
+          </div>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- {JSON.stringify(currentPlayerBeforeMove)} -->
+    <div class="board flex flex-col items-center mt-16">
+      {#each mapWithPlayers as row, rowIdx}
+        <div class="flex">
+          {#each row as { x, y, hole, player }, cellIdx}
+            <span
+              class={`h-12 w-12 border border-black ${
+                hole ? "bg-gray-900" : ""
+              }`}
+            >
+              {#if player}
+                <div
+                  class={`w-full h-full ${player.color} flex items-center justify-center text-3xl`}
+                >
+                  {directions[player.direction]}
+                </div>
+              {/if}
+            </span>
+          {/each}
         </div>
       {/each}
     </div>
 
-    <div class="flex flex-col ml-12">
-      <div class="flex">
-        <span class="w-16 h-16" />
-        <button
-          on:click={onUp}
-          disabled={!canWalk["up"]}
-          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
-          >Up</button
-        >
-        <span class="w-16 h-16" />
+    <div class="controls flex justify-center mt-12">
+      <div class="players">
+        {#each players as player, idx}
+          <div
+            class={`px-3 py-1 mt-1 text-left ${player.color} ${
+              player.hp <= 0 ? "line-through" : ""
+            }`}
+          >
+            {player.name}
+            {player.hp}
+            {currentPlayerIdx == idx ? "*" : ""}
+          </div>
+        {/each}
       </div>
-      <div class="flex">
-        <button
-          on:click={onLeft}
-          disabled={!canWalk["left"]}
-          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
-          >Left</button
-        >
-        <button
-          on:click={onAtk}
-          disabled={!attackable}
-          class={`btn w-16 h-16 border rounded flex items-center justify-center ${
-            !attackable ? "btn-disabled" : ""
-          }`}>Atk</button
-        >
-        <button
-          on:click={onRight}
-          disabled={!canWalk["right"]}
-          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
-          >Right</button
-        >
+
+      <div class="flex flex-col ml-12">
+        <div class="flex">
+          <span class="w-16 h-16" />
+          <button
+            on:click={onUp}
+            disabled={!canWalk["up"]}
+            class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+            >Up</button
+          >
+          <span class="w-16 h-16" />
+        </div>
+        <div class="flex">
+          <button
+            on:click={onLeft}
+            disabled={!canWalk["left"]}
+            class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+            >Left</button
+          >
+          <button
+            on:click={onAtk}
+            disabled={!attackable}
+            class={`btn w-16 h-16 border rounded flex items-center justify-center ${
+              !attackable ? "btn-disabled" : ""
+            }`}>Atk</button
+          >
+          <button
+            on:click={onRight}
+            disabled={!canWalk["right"]}
+            class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+            >Right</button
+          >
+        </div>
+        <div class="flex">
+          <span class="w-16 h-16" />
+          <button
+            on:click={onDown}
+            disabled={!canWalk["down"]}
+            class={`btn w-16 h-16 border rounded flex items-center justify-center`}
+            >Down</button
+          >
+          <span class="w-16 h-16" />
+        </div>
       </div>
-      <div class="flex">
-        <span class="w-16 h-16" />
-        <button
-          on:click={onDown}
-          disabled={!canWalk["down"]}
-          class={`btn w-16 h-16 border rounded flex items-center justify-center`}
-          >Down</button
+
+      <div class="ml-8 flex flex-col">
+        <button on:click={rollDice} disabled={rolled} class="btn">Roll</button>
+        <button on:click={resetWalk} disabled={!rolled} class="btn"
+          >Reset</button
         >
-        <span class="w-16 h-16" />
+
+        {#if rolled}
+          <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
+        {/if}
       </div>
     </div>
 
-    <div class="ml-8 flex flex-col">
-      <button on:click={rollDice} disabled={rolled} class="btn">Roll</button>
-      <button on:click={resetWalk} disabled={!rolled} class="btn">Reset</button>
-
-      {#if rolled}
-        <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
-      {/if}
-    </div>
-  </div>
-
-  {#if gameEnded}
-    <div class="flex justify-center mt-8">
-      <button class="btn" on:click={restartGame}>Restart</button>
-    </div>
+    {#if gameEnded}
+      <div class="flex justify-center mt-8">
+        <button class="btn" on:click={restartGame}>Restart</button>
+      </div>
+    {/if}
   {/if}
 </main>
 
