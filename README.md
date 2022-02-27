@@ -4,13 +4,13 @@
 
 ## TODOs
 
-- [ ] Game Mechanics
-  - [ ] Player choose spawn location
+- [x] Game Mechanics
+  - [x] Player choose spawn location
   - [x] Living players take turns
   - [x] Dice rolling, walk, attack, end turn
   - [x] Attack reduces HP
   - [x] Instakill attack (Push player to the hole)
-- [ ] Online Multiplayer
+- [x] Online Multiplayer
 - [ ] Randomly generated map / map presets
 - [ ] Replays
 - [ ] etc.

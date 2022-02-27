@@ -1,4 +1,25 @@
 <script lang="ts">
+  import type { svelteSyncedStore } from "@syncedstore/svelte"
+
+  import { onMount, onDestroy } from "svelte"
+  import type { GamePlayer, svelteStore } from "./lib/synced-store"
+  import { player } from "./lib/player-store"
+
+  export let store: typeof svelteStore
+  export let nextState: () => void
+  let currentPlayerBeforeMove: GamePlayer
+
+  const playerId = $player.id
+  $: players = $store.players
+  $: currentPlayerIdx = $store.gameData.currentPlayerIdx || 0
+  $: maxDistance = $store.gameData.maxDistance || 0
+  $: distance = $store.gameData.distance || 0
+  $: rolled = $store.gameData.rolled || false
+  $: currentPlayerBeforeMove = $store.gameData.currentPlayerBeforeMove || {}
+  $: gameEnded = $store.gameData.gameEnded || false
+  $: isMyTurn = players[currentPlayerIdx].id === playerId
+  $: currentPlayer = players[currentPlayerIdx]
+
   const directions = {
     up: "🔼",
     right: "▶️",
@@ -14,35 +35,6 @@
   map[0] = map[0].map((_cell) => true)
   map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 
-  let players = [
-    { x: 2, y: 2, direction: "right", color: "bg-lime-500", name: "A", hp: 5 },
-    { x: 3, y: 5, direction: "left", color: "bg-red-500", name: "B", hp: 5 },
-    { x: 4, y: 3, direction: "left", color: "bg-blue-500", name: "C", hp: 5 },
-  ]
-
-  let currentPlayerIdx = 0
-  let maxDistance = 0
-  let distance = 0
-  let rolled = false
-  let currentPlayerBeforeMove
-  let gameEnded = false
-
-  $: if (players.filter((p) => p.hp > 0).length === 1) {
-    const winner = players.filter((p) => p.hp > 0)[0]
-    alert(`${winner.name} won!`)
-    gameEnded = true
-  }
-
-  $: if (currentPlayerIdx < 0) {
-    currentPlayerIdx = 0
-  }
-
-  $: if (currentPlayerIdx > players.length - 1) {
-    currentPlayerIdx = players.length - 1
-  }
-
-  $: currentPlayer = players[currentPlayerIdx]
-
   $: mapWithPlayers = map.map((row, y) =>
     row.map((hole, x) => ({
       x,
@@ -54,17 +46,17 @@
     }))
   )
 
-  $: isDead = currentPlayer.hp <= 0
-  $: if (isDead) {
+  $: isDead = currentPlayer && currentPlayer.hp <= 0
+  $: if (isDead && !gameEnded) {
     endTurn()
   }
 
-  $: attackable = rolled && distance == maxDistance
+  $: attackable = isMyTurn && rolled && distance == maxDistance
   $: canWalk = {
-    up: rolled && walkable(currentPlayer.x, currentPlayer.y - 1),
-    down: rolled && walkable(currentPlayer.x, currentPlayer.y + 1),
-    left: rolled && walkable(currentPlayer.x - 1, currentPlayer.y),
-    right: rolled && walkable(currentPlayer.x + 1, currentPlayer.y),
+    up: isMyTurn && rolled && walkable(currentPlayer.x, currentPlayer.y - 1),
+    down: isMyTurn && rolled && walkable(currentPlayer.x, currentPlayer.y + 1),
+    left: isMyTurn && rolled && walkable(currentPlayer.x - 1, currentPlayer.y),
+    right: isMyTurn && rolled && walkable(currentPlayer.x + 1, currentPlayer.y),
   }
 
   function onUp() {
@@ -72,10 +64,9 @@
     if (!walkable(player.x, player.y - 1)) {
       return
     }
-    player.direction = "up"
-    player.y = player.y - 1
-    distance += 1
-    players = players
+    $store.players[currentPlayerIdx].direction = "up"
+    $store.players[currentPlayerIdx].y = player.y - 1
+    $store.gameData.distance = distance + 1
   }
 
   function onLeft() {
@@ -83,10 +74,9 @@
     if (!walkable(player.x - 1, player.y)) {
       return
     }
-    player.direction = "left"
-    player.x = player.x - 1
-    distance += 1
-    players = players
+    $store.players[currentPlayerIdx].direction = "left"
+    $store.players[currentPlayerIdx].x = player.x - 1
+    $store.gameData.distance = distance + 1
   }
 
   function onRight() {
@@ -94,10 +84,9 @@
     if (!walkable(player.x + 1, player.y)) {
       return
     }
-    player.direction = "right"
-    player.x = player.x + 1
-    distance += 1
-    players = players
+    $store.players[currentPlayerIdx].direction = "right"
+    $store.players[currentPlayerIdx].x = player.x + 1
+    $store.gameData.distance = distance + 1
   }
 
   function onDown() {
@@ -105,10 +94,9 @@
     if (!walkable(player.x, player.y + 1)) {
       return
     }
-    player.direction = "down"
-    player.y = player.y + 1
-    distance += 1
-    players = players
+    $store.players[currentPlayerIdx].direction = "down"
+    $store.players[currentPlayerIdx].y = player.y + 1
+    $store.gameData.distance = distance + 1
   }
 
   function onAtk() {
@@ -128,7 +116,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].y -= 1
           checkPlayerInHole(targetIdx)
-          players = players
         }
         break
       case "right":
@@ -139,7 +126,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].x += 1
           checkPlayerInHole(targetIdx)
-          players = players
         }
         break
       case "down":
@@ -150,7 +136,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].y += 1
           checkPlayerInHole(targetIdx)
-          players = players
         }
         break
       case "left":
@@ -161,7 +146,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].x -= 1
           checkPlayerInHole(targetIdx)
-          players = players
         }
         break
     }
@@ -173,7 +157,7 @@
     const player = players[playerIdx]
 
     if (map[player.y]?.[player.x] == true) {
-      players[playerIdx].hp = 0
+      $store.players[playerIdx].hp = 0
     }
   }
 
@@ -186,38 +170,69 @@
   }
 
   function rollDice() {
-    currentPlayerBeforeMove = { ...currentPlayer }
-    maxDistance = ~~(Math.random() * 6) + 1
-    rolled = true
+    $store.gameData.currentPlayerBeforeMove = { ...currentPlayer }
+    $store.gameData.maxDistance = ~~(Math.random() * 6) + 1
+    $store.gameData.rolled = true
   }
 
   function resetWalk() {
-    players[currentPlayerIdx] = { ...currentPlayerBeforeMove }
-    distance = 0
-    players = players
+    $store.players[currentPlayerIdx].x = currentPlayerBeforeMove.x
+    $store.players[currentPlayerIdx].y = currentPlayerBeforeMove.y
+    $store.players[currentPlayerIdx].direction =
+      currentPlayerBeforeMove.direction
+    $store.gameData.distance = 0
   }
 
   function endTurn() {
-    currentPlayerIdx = (currentPlayerIdx + 1) % players.length
-    rolled = false
-    distance = 0
-    maxDistance = 0
+    checkWinner()
+    $store.gameData.currentPlayerIdx = (currentPlayerIdx + 1) % players.length
+    $store.gameData.rolled = false
+    $store.gameData.distance = 0
+    $store.gameData.maxDistance = 0
   }
 
   function restartGame() {
-    currentPlayerIdx = 0
-    rolled = false
-    distance = 0
-    maxDistance = 0
-    players = players.map((p) => ({ ...p, hp: 5 }))
-    gameEnded = false
+    $store.gameData.currentPlayerIdx = 0
+    $store.gameData.rolled = false
+    $store.gameData.distance = 0
+    $store.gameData.maxDistance = 0
+    $store.players.forEach((p) => {
+      delete p.x
+      delete p.y
+      delete p.direction
+      delete p.hp
+    })
+    $store.gameData.gameEnded = false
+
+    nextState()
+  }
+
+  function checkWinner() {
+    if (players.filter((p) => p.hp > 0).length === 1) {
+      const winner = players.filter((p) => p.hp > 0)[0]
+      alert(`${winner.name} won!`)
+      $store.gameData.gameEnded = true
+    }
   }
 </script>
 
-<main>
-  <h1>That Paper Game</h1>
+<div class="prepare">
+  <h2 class="text-xl">Prepare</h2>
+
+  <div class="players">
+    <h2 class="text-lg">Players</h2>
+
+    <div class="flex flex-col w-32 justify-center mx-auto">
+      {#each players as player, idx}
+        <div class={`${idx === currentPlayerIdx ? "bg-green-400" : ""}`}>
+          #{idx + 1}: {player.name}
+        </div>
+      {/each}
+    </div>
+  </div>
+
   <!-- {JSON.stringify(currentPlayerBeforeMove)} -->
-  <div class="board flex flex-col items-center">
+  <div class="board flex flex-col items-center mt-16">
     {#each mapWithPlayers as row, rowIdx}
       <div class="flex">
         {#each row as { x, y, hole, player }, cellIdx}
@@ -236,6 +251,10 @@
       </div>
     {/each}
   </div>
+
+  {#if isMyTurn}
+    <div class="text-lg mt-8 bg-green-300 inline-block">It's Your Turn!</div>
+  {/if}
 
   <div class="controls flex justify-center mt-12">
     <div class="players">
@@ -297,8 +316,14 @@
     </div>
 
     <div class="ml-8 flex flex-col">
-      <button on:click={rollDice} disabled={rolled} class="btn">Roll</button>
-      <button on:click={resetWalk} disabled={!rolled} class="btn">Reset</button>
+      <button
+        on:click={rollDice}
+        disabled={gameEnded || !isMyTurn || rolled}
+        class="btn">Roll</button
+      >
+      <button on:click={resetWalk} disabled={!isMyTurn || !rolled} class="btn"
+        >Reset</button
+      >
 
       {#if rolled}
         <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
@@ -311,47 +336,4 @@
       <button class="btn" on:click={restartGame}>Restart</button>
     </div>
   {/if}
-</main>
-
-<style>
-  :root {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
-      Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  }
-
-  main {
-    text-align: center;
-    padding: 1em;
-    margin: 0 auto;
-  }
-
-  img {
-    height: 16rem;
-    width: 16rem;
-  }
-
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4rem;
-    line-height: 1.1;
-    margin: 2rem auto;
-    max-width: 14rem;
-  }
-
-  p {
-    max-width: 14rem;
-    margin: 1rem auto;
-    line-height: 1.35;
-  }
-
-  @media (min-width: 480px) {
-    h1 {
-      max-width: none;
-    }
-
-    p {
-      max-width: none;
-    }
-  }
-</style>
+</div>
