@@ -53,10 +53,22 @@
 
   $: attackable = isMyTurn && rolled && distance == maxDistance
   $: canWalk = {
-    up: isMyTurn && rolled && walkable(currentPlayer.x, currentPlayer.y - 1),
-    down: isMyTurn && rolled && walkable(currentPlayer.x, currentPlayer.y + 1),
-    left: isMyTurn && rolled && walkable(currentPlayer.x - 1, currentPlayer.y),
-    right: isMyTurn && rolled && walkable(currentPlayer.x + 1, currentPlayer.y),
+    up:
+      isMyTurn &&
+      rolled &&
+      walkable(currentPlayer.x, currentPlayer.y - 1, "up"),
+    down:
+      isMyTurn &&
+      rolled &&
+      walkable(currentPlayer.x, currentPlayer.y + 1, "down"),
+    left:
+      isMyTurn &&
+      rolled &&
+      walkable(currentPlayer.x - 1, currentPlayer.y, "left"),
+    right:
+      isMyTurn &&
+      rolled &&
+      walkable(currentPlayer.x + 1, currentPlayer.y, "right"),
   }
 
   function onUp() {
@@ -161,8 +173,17 @@
     }
   }
 
-  function walkable(x, y) {
+  function walkable(x, y, direction = "none") {
+    const directionOpposite = {
+      up: "down",
+      down: "up",
+      left: "right",
+      right: "left",
+    }
+
     if (distance >= maxDistance) return false
+    if (distance > 0 && currentPlayer.direction == directionOpposite[direction])
+      return false
     if (mapWithPlayers[y]?.[x].hole) return false
     if (mapWithPlayers[y]?.[x].player) return false
 

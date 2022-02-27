@@ -11,7 +11,7 @@
   - [x] Attack reduces HP
   - [x] Instakill attack (Push player to the hole)
   - [ ] Fix edge case when pushing 2+ players in the same row
-  - [ ] Player cannot walk back after first step
+  - [x] Player cannot walk back after first step
 - [x] Online Multiplayer
   - [ ] Room owner can kick players
   - [ ] Player turn can be skipped after 15 seconds of inactive
