@@ -57,12 +57,6 @@
   }
 
   // TODO: Move to Game Component
-  const directions = {
-    up: "🔼",
-    right: "▶️",
-    down: "🔽",
-    left: "◀️",
-  }
 
   let map: boolean[][] = Array(8)
     .fill(false)
@@ -305,7 +299,7 @@
     {/if}
 
     <!-- {JSON.stringify(currentPlayerBeforeMove)} -->
-    <div class="board flex flex-col items-center mt-16">
+    <!-- <div class="board flex flex-col items-center mt-16">
       {#each mapWithPlayers as row, rowIdx}
         <div class="flex">
           {#each row as { x, y, hole, player }, cellIdx}
@@ -325,7 +319,7 @@
           {/each}
         </div>
       {/each}
-    </div>
+    </div> -->
 
     <div class="controls flex justify-center mt-12">
       <div class="players">
