@@ -11,7 +11,7 @@ interface RoomPlayer {
   enteredAt: number
 }
 
-interface GamePlayer {
+export interface GamePlayer {
   id: string
   name: string
   x?: number
