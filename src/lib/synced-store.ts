@@ -3,7 +3,7 @@ import { WebrtcProvider } from "y-webrtc"
 import { svelteSyncedStore } from "@syncedstore/svelte"
 import { writable } from "svelte/store"
 
-interface RoomPlayer {
+export interface RoomPlayer {
   id: string
   name: string
   ready: boolean

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte"
-  import type { svelteStore } from "./lib/synced-store"
+  import type { svelteStore, RoomPlayer } from "./lib/synced-store"
   import { player } from "./lib/player-store"
 
   export let store: typeof svelteStore
@@ -8,7 +8,7 @@
 
   const playerId = $player.id
 
-  $: roomPlayers = Object.values($store.roomPlayers)
+  $: roomPlayers = Object.values($store.roomPlayers) as RoomPlayer[]
 
   onMount(() => {
     $store.roomPlayers[playerId] = {
@@ -26,18 +26,14 @@
       roomPlayers.sort((a, b) => a.enteredAt - b.enteredAt)[0].id == playerId)
 
   $: canStartGame =
-    isRoomOwner &&
-    Object.keys($store.roomPlayers).length > 1 &&
-    Object.values($store.roomPlayers).every((p) => p.ready)
+    isRoomOwner && roomPlayers.length > 1 && roomPlayers.every((p) => p.ready)
 
   function leaveRoom() {
     delete $store.roomPlayers[playerId]
   }
 
   function shufflePlayerAndProceed() {
-    const shuffledRoomPlayers = Object.values($store.roomPlayers).sort(
-      () => Math.random() - 0.5
-    )
+    const shuffledRoomPlayers = roomPlayers.sort(() => Math.random() - 0.5)
 
     shuffledRoomPlayers.forEach((player) => {
       $store.players.push({
