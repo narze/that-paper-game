@@ -82,6 +82,7 @@
   function nextPlayer() {
     if (prepareIndex === players.length - 1) {
       $store.players.forEach((p) => (p.hp = 5))
+      $store.gameData.prepareIndex = 0
       nextState()
     } else {
       $store.gameData.prepareIndex = prepareIndex + 1

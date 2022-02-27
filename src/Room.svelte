@@ -53,8 +53,13 @@
   }
 
   function nextState() {
-    $svelteStore.gameData.state =
-      (gameState + 1) % Object.keys(GameState).length
+    if (gameState == GameState.Start) {
+      // TODO: Go to end state component
+      $svelteStore.gameData.state = GameState.Prepare
+    } else {
+      $svelteStore.gameData.state =
+        (gameState + 1) % Object.keys(GameState).length
+    }
   }
 </script>
 

@@ -35,20 +35,6 @@
   map[0] = map[0].map((_cell) => true)
   map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 
-  $: if (players.filter((p) => p.hp > 0).length === 1) {
-    const winner = players.filter((p) => p.hp > 0)[0]
-    // alert(`${winner.name} won!`)
-    gameEnded = true
-  }
-
-  // $: if (currentPlayerIdx < 0) {
-  //   $store.gameData.currentPlayerIdx = 0
-  // }
-
-  // $: if (currentPlayerIdx > players.length - 1) {
-  //   $store.gameData.currentPlayerIdx = players.length - 1
-  // }
-
   $: mapWithPlayers = map.map((row, y) =>
     row.map((hole, x) => ({
       x,
@@ -61,7 +47,7 @@
   )
 
   $: isDead = currentPlayer && currentPlayer.hp <= 0
-  $: if (isDead) {
+  $: if (isDead && !gameEnded) {
     endTurn()
   }
 
@@ -81,7 +67,6 @@
     $store.players[currentPlayerIdx].direction = "up"
     $store.players[currentPlayerIdx].y = player.y - 1
     $store.gameData.distance = distance + 1
-    // $store.players[currentPlayerIdx] = player
   }
 
   function onLeft() {
@@ -92,7 +77,6 @@
     $store.players[currentPlayerIdx].direction = "left"
     $store.players[currentPlayerIdx].x = player.x - 1
     $store.gameData.distance = distance + 1
-    // $store.players[currentPlayerIdx] = player
   }
 
   function onRight() {
@@ -103,7 +87,6 @@
     $store.players[currentPlayerIdx].direction = "right"
     $store.players[currentPlayerIdx].x = player.x + 1
     $store.gameData.distance = distance + 1
-    // $store.players[currentPlayerIdx] = player
   }
 
   function onDown() {
@@ -114,7 +97,6 @@
     $store.players[currentPlayerIdx].direction = "down"
     $store.players[currentPlayerIdx].y = player.y + 1
     $store.gameData.distance = distance + 1
-    // $store.players[currentPlayerIdx] = player
   }
 
   function onAtk() {
@@ -134,7 +116,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].y -= 1
           checkPlayerInHole(targetIdx)
-          // players = players
         }
         break
       case "right":
@@ -145,7 +126,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].x += 1
           checkPlayerInHole(targetIdx)
-          // players = players
         }
         break
       case "down":
@@ -156,7 +136,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].y += 1
           checkPlayerInHole(targetIdx)
-          // players = players
         }
         break
       case "left":
@@ -167,7 +146,6 @@
           players[targetIdx].hp -= 1
           players[targetIdx].x -= 1
           checkPlayerInHole(targetIdx)
-          // players = players
         }
         break
     }
@@ -179,7 +157,7 @@
     const player = players[playerIdx]
 
     if (map[player.y]?.[player.x] == true) {
-      players[playerIdx].hp = 0
+      $store.players[playerIdx].hp = 0
     }
   }
 
@@ -206,6 +184,7 @@
   }
 
   function endTurn() {
+    checkWinner()
     $store.gameData.currentPlayerIdx = (currentPlayerIdx + 1) % players.length
     $store.gameData.rolled = false
     $store.gameData.distance = 0
@@ -213,20 +192,26 @@
   }
 
   function restartGame() {
-    currentPlayerIdx = 0
-    rolled = false
-    distance = 0
-    maxDistance = 0
-    players = players.map((p) => ({ ...p, hp: 5 }))
-    gameEnded = false
+    $store.gameData.currentPlayerIdx = 0
+    $store.gameData.rolled = false
+    $store.gameData.distance = 0
+    $store.gameData.maxDistance = 0
+    $store.players.forEach((p) => {
+      delete p.x
+      delete p.y
+      delete p.direction
+      delete p.hp
+    })
+    $store.gameData.gameEnded = false
+
+    nextState()
   }
 
-  function nextPlayer() {
-    if (currentPlayerIdx === players.length - 1) {
-      $store.players.forEach((p) => (p.hp = 5))
-      nextState()
-    } else {
-      $store.gameData.currentPlayerIdx = currentPlayerIdx + 1
+  function checkWinner() {
+    if (players.filter((p) => p.hp > 0).length === 1) {
+      const winner = players.filter((p) => p.hp > 0)[0]
+      alert(`${winner.name} won!`)
+      $store.gameData.gameEnded = true
     }
   }
 </script>
@@ -331,8 +316,10 @@
     </div>
 
     <div class="ml-8 flex flex-col">
-      <button on:click={rollDice} disabled={!isMyTurn || rolled} class="btn"
-        >Roll</button
+      <button
+        on:click={rollDice}
+        disabled={gameEnded || !isMyTurn || rolled}
+        class="btn">Roll</button
       >
       <button on:click={resetWalk} disabled={!isMyTurn || !rolled} class="btn"
         >Reset</button
