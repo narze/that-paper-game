@@ -12,6 +12,7 @@
 
   import { player } from "./lib/player-store"
   import WaitingRoom from "./WaitingRoom.svelte"
+  import PrepareMap from "./PrepareMap.svelte"
 
   export let roomId = ""
   export let createRoom: boolean
@@ -296,8 +297,7 @@
     {#if gameState == GameState.Waiting}
       <WaitingRoom store={svelteStore} {nextState} />
     {:else if gameState == GameState.Prepare}
-      <!-- <PrepareMap store={svelteStore} {nextState} /> -->
-      TODO: Prepare the game...
+      <PrepareMap store={svelteStore} {nextState} />
     {:else if gameState == GameState.Start}
       TODO: Start the game...
     {:else if gameState == GameState.Ended}

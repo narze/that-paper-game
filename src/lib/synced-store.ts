@@ -11,6 +11,16 @@ interface RoomPlayer {
   enteredAt: number
 }
 
+interface GamePlayer {
+  id: string
+  name: string
+  x?: number
+  y?: number
+  direction?: "up" | "down" | "left" | "right"
+  color?: string
+  hp?: number
+}
+
 export enum GameState {
   Waiting,
   Prepare,
@@ -22,7 +32,7 @@ export enum GameState {
 export const store = syncedStore({
   todos: [],
   fragment: "xml",
-  players: [],
+  players: [] as GamePlayer[],
   roomPlayers: {} as Record<string, RoomPlayer>,
   roomOwnerIds: [],
   gameData: {} as Record<string, any>,

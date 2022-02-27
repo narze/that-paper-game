@@ -1,6 +1,4 @@
 <script lang="ts">
-  import type { svelteSyncedStore } from "@syncedstore/svelte"
-
   import { onMount, onDestroy } from "svelte"
   import type { svelteStore } from "./lib/synced-store"
   import { player } from "./lib/player-store"
@@ -34,6 +32,21 @@
 
   function leaveRoom() {
     delete $store.roomPlayers[playerId]
+  }
+
+  function shufflePlayerAndProceed() {
+    const shuffledRoomPlayers = Object.values($store.roomPlayers).sort(
+      () => Math.random() - 0.5
+    )
+
+    shuffledRoomPlayers.forEach((player) => {
+      $store.players.push({
+        id: player.id,
+        name: player.name,
+      })
+    })
+
+    nextState()
   }
 
   onDestroy(() => {
@@ -79,7 +92,7 @@
       <button
         class="btn btn-primary"
         disabled={!canStartGame}
-        on:click={nextState}
+        on:click={shufflePlayerAndProceed}
       >
         Start Game!
       </button>
