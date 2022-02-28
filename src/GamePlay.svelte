@@ -243,7 +243,7 @@
     <div class="flex flex-col gap-2">
       {#each players as player, idx}
         <div class={`font-prompt ${player.color} p-1 rounded-lg`}>
-          <p class="text-right">
+          <p class="text-left">
             #{idx + 1}: {currentPlayerIdx === idx ? "🎮 " : ""}{player.name}
             {player.id === playerId ? "(Me)" : ""}
             ({player.hp} HP)
