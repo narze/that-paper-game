@@ -1,4 +1,18 @@
+@import url("https://fonts.googleapis.com/css2?family=Prompt&family=Ubuntu&display=swap");
+
 /* Write your global styles here, in PostCSS syntax */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.font-prompt {
+  font-family: "Prompt", sans-serif;
+}
+
+.font-ubuntu {
+  font-family: "Ubuntu", sans-serif;
+}
+
+.input {
+  @apply p-1 rounded-lg border border-blue-500 focus:ring ring-blue-500 ring-offset-2 duration-200
+}

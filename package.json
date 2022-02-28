@@ -29,5 +29,9 @@
     "vite": "^2.8.0",
     "y-webrtc": "^10.2.2",
     "yjs": "^13.5.27"
+  },
+  "dependencies": {
+    "prettier": "^2.5.1",
+    "prettier-plugin-svelte": "^2.6.0"
   }
 }
