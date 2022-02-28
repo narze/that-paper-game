@@ -24,7 +24,7 @@
 {#if $url.hash.indexOf("#/rooms/") === 0 || $url.hash === "#/"}
   <Room {roomId} {createRoom} />
 {:else}
-  <main class="grid h-screen place-items-center bg-gameplay">
+  <main class="grid h-screen place-items-center">
     <div class="flex flex-col gap-4">
       <h1 class="text-6xl font-bold text-blue-500 font-ubuntu">
         That Paper Game
