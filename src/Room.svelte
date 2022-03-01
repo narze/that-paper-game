@@ -63,11 +63,15 @@
 </script>
 
 <main class="grid h-screen place-items-center">
-  <div class="flex {enteredRoom ? 'flex-row' : 'flex-col'} items-center gap-6">
+  <div
+    class="flex {enteredRoom
+      ? 'flex-col md:flex-row'
+      : 'flex-col'} items-center gap-6"
+  >
     {#if gameState === GameState.Waiting}
       <div
         class="flex flex-col gap-4 {enteredRoom
-          ? 'border-r-2 border-blue-500 pr-4'
+          ? 'border-b-2 md:border-r-2 md:border-b-0 border-blue-500 pb-4 md:pr-4 md:pb-0'
           : ''}"
       >
         <div class="flex flex-col">

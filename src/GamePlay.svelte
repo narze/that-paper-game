@@ -300,7 +300,7 @@
 
     <div class="controls flex flex-row gap-8 justify-center">
       <div class="flex flex-col gap-2">
-        <div class="flex flex gap-2">
+        <div class="flex gap-2">
           <span class="w-16 h-16" />
           <button
             on:click={onUp}
