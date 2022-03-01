@@ -246,7 +246,7 @@
           <p class="text-left">
             #{idx + 1}: {currentPlayerIdx === idx ? "🎮 " : ""}{player.name}
             {player.id === playerId ? "(Me)" : ""}
-            ({player.hp} HP)
+            {"💖".repeat(Number(player.hp))}
           </p>
         </div>
       {/each}
