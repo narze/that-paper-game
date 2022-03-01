@@ -16,3 +16,12 @@ export function generateSimpleMap() {
 export function convertToArrayMap(stringMap: string[]) {
   return stringMap.map((row) => row.split("").map((value) => value == "1"))
 }
+
+// TODO: Check for other players, direction, etc.
+export function walkable(x, y, map) {
+  if (map[y][x]) {
+    return false
+  }
+
+  return true
+}

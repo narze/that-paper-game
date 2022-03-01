@@ -1,4 +1,8 @@
-import { convertToArrayMap, generateSimpleMap } from "./game-mechanics"
+import {
+  convertToArrayMap,
+  generateSimpleMap,
+  walkable,
+} from "./game-mechanics"
 
 describe("generateSimpleMap", () => {
   it("returns a 2d array", () => {
@@ -41,5 +45,23 @@ describe("convertToArrayMap", () => {
     ]
 
     expect(convertToArrayMap(stringMap)).toEqual(expectedBooleanMap)
+  })
+})
+
+describe("walkable", () => {
+  it("returns true if the designated location is not hole (false)", () => {
+    const map = convertToArrayMap(["00", "11"])
+
+    const [x, y] = [0, 0]
+
+    expect(walkable(x, y, map)).toBe(true)
+  })
+
+  it("returns false if the designated location is hole (true)", () => {
+    const map = convertToArrayMap(["00", "11"])
+
+    const [x, y] = [0, 1]
+
+    expect(walkable(x, y, map)).toBe(false)
   })
 })
