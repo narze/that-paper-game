@@ -11,6 +11,6 @@ const config = {
     // themes: ["light", "dark"],
     themes: false,
   },
-}
+};
 
-module.exports = config
+module.exports = config;

@@ -1,24 +1,24 @@
-import { syncedStore, getYjsValue } from "@syncedstore/core"
-import { WebrtcProvider } from "y-webrtc"
-import { svelteSyncedStore } from "@syncedstore/svelte"
-import { writable } from "svelte/store"
+import { syncedStore, getYjsValue } from "@syncedstore/core";
+import { WebrtcProvider } from "y-webrtc";
+import { svelteSyncedStore } from "@syncedstore/svelte";
+import { writable } from "svelte/store";
 
 export interface RoomPlayer {
-  id: string
-  name: string
-  ready: boolean
-  admin: boolean
-  enteredAt: number
+  id: string;
+  name: string;
+  ready: boolean;
+  admin: boolean;
+  enteredAt: number;
 }
 
 export interface GamePlayer {
-  id: string
-  name: string
-  x?: number
-  y?: number
-  direction?: "up" | "down" | "left" | "right"
-  color?: string
-  hp?: number
+  id: string;
+  name: string;
+  x?: number;
+  y?: number;
+  direction?: "up" | "down" | "left" | "right";
+  color?: string;
+  hp?: number;
 }
 
 export enum GameState {
@@ -36,14 +36,14 @@ export const store = syncedStore({
   roomPlayers: {} as Record<string, RoomPlayer>,
   roomOwnerIds: [],
   gameData: {} as Record<string, any>,
-})
-export const svelteStore = svelteSyncedStore(store)
-export const synced = writable(false)
-export const connected = writable(false)
-export const peers = writable([])
+});
+export const svelteStore = svelteSyncedStore(store);
+export const synced = writable(false);
+export const connected = writable(false);
+export const peers = writable([]);
 
 // Create a document that syncs automatically using Y-WebRTC
-const doc = getYjsValue(store)
+const doc = getYjsValue(store);
 
 export const connectRoom = (roomId: string) => {
   const webrtcProvider = new WebrtcProvider(
@@ -64,9 +64,9 @@ export const connectRoom = (roomId: string) => {
     //     // ],
     //   },
     // } as any
-  )
+  );
 
-  let connectInterval
+  let connectInterval;
 
   connectInterval = setInterval(() => {
     if (webrtcProvider.connected) {
@@ -78,21 +78,21 @@ export const connectRoom = (roomId: string) => {
       //   .getMap("tmp")
       //   .set(`${webrtcProvider.doc.clientID}`, true)
 
-      console.log("connected")
-      connected.set(true)
+      console.log("connected");
+      connected.set(true);
 
-      clearInterval(connectInterval)
+      clearInterval(connectInterval);
     }
-  }, 100)
+  }, 100);
 
   webrtcProvider.on("synced", (args) => {
-    console.log("synced", args)
-    synced.set(true)
-  })
+    console.log("synced", args);
+    synced.set(true);
+  });
 
   webrtcProvider.on("peers", (p) => {
-    peers.set(p?.webrtcPeers ?? [])
-  })
+    peers.set(p?.webrtcPeers ?? []);
+  });
 
-  return webrtcProvider
-}
+  return webrtcProvider;
+};
