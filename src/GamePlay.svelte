@@ -4,6 +4,7 @@
   import { onMount, onDestroy } from "svelte"
   import type { GamePlayer, svelteStore } from "./lib/synced-store"
   import { player } from "./lib/player-store"
+  import { generateSimpleMap } from "./lib/game-mechanics"
 
   export let store: typeof svelteStore
   export let nextState: () => void
@@ -27,13 +28,7 @@
     left: "◀️",
   }
 
-  let map: boolean[][] = Array(8)
-    .fill(false)
-    .map(() => Array(5).fill(false))
-    .map((a) => [true, ...a, true])
-
-  map[0] = map[0].map((_cell) => true)
-  map[map.length - 1] = map[map.length - 1].map((_cell) => true)
+  let map: boolean[][] = generateSimpleMap()
 
   $: mapWithPlayers = map.map((row, y) =>
     row.map((hole, x) => ({
