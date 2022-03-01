@@ -14,5 +14,5 @@
 }
 
 .input {
-  @apply p-1 rounded-lg border border-blue-500 focus:ring ring-blue-500 ring-offset-2 duration-200
+  @apply p-1 rounded-lg border border-blue-500 focus:ring ring-blue-500 ring-offset-2 duration-200;
 }

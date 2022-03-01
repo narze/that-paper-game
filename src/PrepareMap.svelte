@@ -1,23 +1,23 @@
 <script lang="ts">
-  import type { svelteSyncedStore } from "@syncedstore/svelte";
+  import type { svelteSyncedStore } from "@syncedstore/svelte"
 
-  import { onMount, onDestroy } from "svelte";
-  import type { svelteStore } from "./lib/synced-store";
-  import { player } from "./lib/player-store";
+  import { onMount, onDestroy } from "svelte"
+  import type { svelteStore } from "./lib/synced-store"
+  import { player } from "./lib/player-store"
 
-  export let store: typeof svelteStore;
-  export let nextState: () => void;
+  export let store: typeof svelteStore
+  export let nextState: () => void
 
-  const playerId = $player.id;
-  $: players = $store.players;
-  $: prepareIndex = $store.gameData.prepareIndex || 0;
+  const playerId = $player.id
+  $: players = $store.players
+  $: prepareIndex = $store.gameData.prepareIndex || 0
 
   const directions = {
     up: "🔼",
     right: "▶️",
     down: "🔽",
     left: "◀️",
-  };
+  }
 
   const colors = [
     "bg-red-400",
@@ -36,18 +36,18 @@
     "bg-navy-400",
     "bg-silver-400",
     "bg-gray-400",
-  ];
+  ]
 
   let map: boolean[][] = Array(8)
     .fill(false)
     .map(() => Array(5).fill(false))
-    .map((a) => [true, ...a, true]);
+    .map((a) => [true, ...a, true])
 
-  map[0] = map[0].map((_cell) => true);
-  map[map.length - 1] = map[map.length - 1].map((_cell) => true);
+  map[0] = map[0].map((_cell) => true)
+  map[map.length - 1] = map[map.length - 1].map((_cell) => true)
 
-  $: isMyTurn = players[prepareIndex].id === playerId;
-  $: isPlaced = players[prepareIndex].direction === "down";
+  $: isMyTurn = players[prepareIndex].id === playerId
+  $: isPlaced = players[prepareIndex].direction === "down"
 
   // $: roomPlayers = Object.values($store.roomPlayers)
 
@@ -57,35 +57,35 @@
       y,
       hole,
       player: $store.players.find((player) => player.x === x && player.y === y),
-    }))
-  );
+    })),
+  )
 
   function placePlayer(x, y) {
     if (!isMyTurn) {
-      return;
+      return
     }
 
     if (map[y][x]) {
-      return;
+      return
     }
 
     if ($store.players.find((player) => player.x === x && player.y === y)) {
-      return;
+      return
     }
 
-    $store.players[prepareIndex].x = x;
-    $store.players[prepareIndex].y = y;
-    $store.players[prepareIndex].direction = "down";
-    $store.players[prepareIndex].color = colors[prepareIndex];
+    $store.players[prepareIndex].x = x
+    $store.players[prepareIndex].y = y
+    $store.players[prepareIndex].direction = "down"
+    $store.players[prepareIndex].color = colors[prepareIndex]
   }
 
   function nextPlayer() {
     if (prepareIndex === players.length - 1) {
-      $store.players.forEach((p) => (p.hp = 5));
-      $store.gameData.prepareIndex = 0;
-      nextState();
+      $store.players.forEach((p) => (p.hp = 5))
+      $store.gameData.prepareIndex = 0
+      nextState()
     } else {
-      $store.gameData.prepareIndex = prepareIndex + 1;
+      $store.gameData.prepareIndex = prepareIndex + 1
     }
   }
 </script>

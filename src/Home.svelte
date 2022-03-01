@@ -1,23 +1,23 @@
 <script lang="ts">
-  import { nanoid } from "nanoid";
+  import { nanoid } from "nanoid"
 
-  import Room from "./Room.svelte";
-  import url from "./lib/url";
+  import Room from "./Room.svelte"
+  import url from "./lib/url"
 
-  $: roomFragment = $url.hash.split(["#/rooms/"])[1];
-  $: roomId = roomFragment?.split("/")[0];
-  $: createRoom = roomFragment?.split("/")[1] == "create";
+  $: roomFragment = $url.hash.split(["#/rooms/"])[1]
+  $: roomId = roomFragment?.split("/")[0]
+  $: createRoom = roomFragment?.split("/")[1] == "create"
 
   function createNewRoom() {
-    const newRoomId = nanoid();
-    window.location.hash = `#/rooms/${newRoomId}/create`;
+    const newRoomId = nanoid()
+    window.location.hash = `#/rooms/${newRoomId}/create`
   }
 
   function joinRoom() {
     if (!roomId) {
-      return alert("Invalid room ID");
+      return alert("Invalid room ID")
     }
-    window.location.hash = `#/rooms/${roomId}`;
+    window.location.hash = `#/rooms/${roomId}`
   }
 </script>
 

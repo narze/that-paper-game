@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte";
+  import { onMount, onDestroy } from "svelte"
   import {
     svelteStore,
     synced,
@@ -8,27 +8,27 @@
     connectRoom,
     GameState,
     RoomPlayer,
-  } from "./lib/synced-store";
-  import url from "./lib/url";
+  } from "./lib/synced-store"
+  import url from "./lib/url"
 
-  import { player } from "./lib/player-store";
-  import WaitingRoom from "./WaitingRoom.svelte";
-  import PrepareMap from "./PrepareMap.svelte";
-  import GamePlay from "./GamePlay.svelte";
+  import { player } from "./lib/player-store"
+  import WaitingRoom from "./WaitingRoom.svelte"
+  import PrepareMap from "./PrepareMap.svelte"
+  import GamePlay from "./GamePlay.svelte"
 
-  export let roomId = "";
-  export let createRoom: boolean;
+  export let roomId = ""
+  export let createRoom: boolean
 
-  const webrtcProvider = connectRoom(roomId);
+  const webrtcProvider = connectRoom(roomId)
 
-  $: gameState = $svelteStore.gameData.state || GameState.Waiting;
+  $: gameState = $svelteStore.gameData.state || GameState.Waiting
 
-  const playerId = $player.id;
+  const playerId = $player.id
 
-  let enteredRoom = false;
+  let enteredRoom = false
 
   function enter() {
-    enteredRoom = true;
+    enteredRoom = true
 
     $svelteStore.roomPlayers[playerId] = {
       id: playerId,
@@ -36,28 +36,28 @@
       ready: false,
       admin: false,
       enteredAt: new Date().getTime(),
-    };
+    }
 
-    window.location.hash = `#/rooms/${roomId}`;
+    window.location.hash = `#/rooms/${roomId}`
   }
 
   $: if ($connected && createRoom && !enteredRoom) {
     // console.log("Auto enter room (creator)")
-    enter();
+    enter()
   }
 
   $: if ($connected && !createRoom && $synced && !enteredRoom) {
     // console.log("Auto enter room (joiners)")
-    enter();
+    enter()
   }
 
   function nextState() {
     if (gameState == GameState.Start) {
       // TODO: Go to end state component
-      $svelteStore.gameData.state = GameState.Prepare;
+      $svelteStore.gameData.state = GameState.Prepare
     } else {
       $svelteStore.gameData.state =
-        (gameState + 1) % Object.keys(GameState).length;
+        (gameState + 1) % Object.keys(GameState).length
     }
   }
 </script>
