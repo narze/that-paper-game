@@ -3,6 +3,7 @@
 
   import Room from "./Room.svelte"
   import url from "./lib/url"
+  import NavBar from "./NavBar.svelte"
 
   $: roomFragment = $url.hash.split(["#/rooms/"])[1]
   $: roomId = roomFragment?.split("/")[0]
@@ -25,6 +26,8 @@
   <Room {roomId} {createRoom} />
 {:else}
   <main class="grid h-screen place-items-center">
+    <NavBar />
+
     <div class="flex flex-col gap-4">
       <h1 class="text-6xl font-bold text-blue-500 font-ubuntu">
         That Paper Game

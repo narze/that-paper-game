@@ -15,6 +15,7 @@
   import WaitingRoom from "./WaitingRoom.svelte"
   import PrepareMap from "./PrepareMap.svelte"
   import GamePlay from "./GamePlay.svelte"
+  import NavBar from "./NavBar.svelte"
 
   export let roomId = ""
   export let createRoom: boolean
@@ -63,6 +64,8 @@
 </script>
 
 <main class="grid h-screen place-items-center">
+  <NavBar />
+
   <div
     class="flex {enteredRoom
       ? 'flex-col md:flex-row'

@@ -23,7 +23,8 @@
   $: isRoomOwner =
     roomPlayers.length &&
     ($store.roomPlayers[playerId]?.admin ||
-      roomPlayers.sort((a, b) => a.enteredAt - b.enteredAt)[0].id == playerId)
+      [...roomPlayers].sort((a, b) => a.enteredAt - b.enteredAt)[0].id ==
+        playerId)
 
   $: canStartGame =
     isRoomOwner && roomPlayers.length > 1 && roomPlayers.every((p) => p.ready)

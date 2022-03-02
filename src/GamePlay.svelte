@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { GamePlayer, svelteStore } from "./lib/synced-store"
   import { player } from "./lib/player-store"
-  import { generateSimpleMap } from "./lib/game-mechanics"
 
   export let store: typeof svelteStore
   export let nextState: () => void

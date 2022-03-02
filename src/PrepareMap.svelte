@@ -14,7 +14,7 @@
   $: isRoomOwner =
     players.length &&
     ($store.players[playerId]?.admin ||
-      players.sort((a, b) => a.enteredAt - b.enteredAt)[0].id == playerId)
+      [...players].sort((a, b) => a.enteredAt - b.enteredAt)[0].id == playerId)
 
   const directions = {
     up: "🔼",
@@ -100,6 +100,10 @@
   }
 
   function placePlayer(x, y) {
+    if (preparePhase != 1) {
+      return
+    }
+
     if (!isMyTurn) {
       return
     }
@@ -179,24 +183,19 @@
           </div>
         </div>
       {/if}
+    {:else if isMyTurn}
+      <div class="flex flex-col gap-2">
+        <div class="text-lg font-ubuntu font-bold">Choose your spawn-point</div>
+        <button class="btn" disabled={!isPlaced} on:click={nextPlayer}
+          >Continue</button
+        >
+      </div>
     {:else}
-      {#if isMyTurn}
-        <div class="flex flex-col gap-2">
-          <div class="text-lg font-ubuntu font-bold">
-            Choose your spawn-point
-          </div>
-          <button class="btn" disabled={!isPlaced} on:click={nextPlayer}
-            >Continue</button
-          >
+      <div class="flex flex-col gap-2">
+        <div class="text-lg font-ubuntu font-bold text-gray-400">
+          Waiting other players to choose spawn-point...
         </div>
-      {/if}
-      {#if !isMyTurn}
-        <div class="flex flex-col gap-2">
-          <div class="text-lg font-ubuntu font-bold text-gray-400">
-            Waiting other players to choose spawn-point...
-          </div>
-        </div>
-      {/if}
+      </div>
     {/if}
 
     <div class="board flex flex-col items-center">
