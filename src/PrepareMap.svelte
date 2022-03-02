@@ -142,10 +142,10 @@
         <div
           class={`font-prompt ${
             player.color || "bg-gray-400"
-          } p-1 rounded-lg text-left`}
+          } px-2 py-1 rounded-lg text-left`}
         >
-          #{idx + 1}: {player.name}
-          {player.id === playerId ? "(Me)" : ""}
+          {player.name}
+          {player.id === playerId ? "(You)" : ""}
         </div>
       {/each}
     </div>

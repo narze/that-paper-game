@@ -90,7 +90,7 @@
             <p class="font-prompt">
               {player.ready ? "✅" : "❌"}
               {player.name}
-              {pId === playerId ? "(Me)" : ""}
+              {pId === playerId ? "(You)" : ""}
             </p>
           {/each}
         </div>

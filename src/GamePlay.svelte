@@ -242,11 +242,15 @@
     <h1 class="text-6xl font-bold font-ubuntu text-blue-500">Players</h1>
     <div class="flex flex-col gap-2">
       {#each players as player, idx}
-        <div class={`font-prompt ${player.color} p-1 rounded-lg`}>
-          <p class="text-left">
-            #{idx + 1}: {currentPlayerIdx === idx ? "🎮 " : ""}{player.name}
-            {player.id === playerId ? "(Me)" : ""}
-            {"💖".repeat(Number(player.hp))}
+        <div class={`font-prompt ${player.color} px-2 py-1 rounded-lg`}>
+          <p class="flex gap-2">
+            <span
+              >{currentPlayerIdx === idx ? "🎮 " : ""}{player.name}
+              {player.id === playerId ? "(You)" : ""}</span
+            >
+            <span class="flex-auto text-right"
+              >{"💖".repeat(Number(player.hp))}</span
+            >
           </p>
         </div>
       {/each}

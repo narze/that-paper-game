@@ -9,6 +9,9 @@
   const playerId = $player.id
 
   $: roomPlayers = Object.values($store.roomPlayers) as RoomPlayer[]
+  $: $store.roomPlayers[playerId].name = $store.roomPlayers[
+    playerId
+  ].name.slice(0, 30)
 
   onMount(() => {
     $store.roomPlayers[playerId] = {
