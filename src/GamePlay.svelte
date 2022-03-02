@@ -1,7 +1,4 @@
 <script lang="ts">
-  import type { svelteSyncedStore } from "@syncedstore/svelte"
-
-  import { onMount, onDestroy } from "svelte"
   import type { GamePlayer, svelteStore } from "./lib/synced-store"
   import { player } from "./lib/player-store"
   import { generateSimpleMap } from "./lib/game-mechanics"
@@ -40,11 +37,6 @@
       ),
     })),
   )
-
-  $: isDead = currentPlayer && currentPlayer.hp <= 0
-  $: if (isDead && !gameEnded) {
-    endTurn()
-  }
 
   $: attackable = isMyTurn && rolled && distance == maxDistance
   $: canWalk = {
@@ -199,9 +191,23 @@
     $store.gameData.distance = 0
   }
 
+  // get next player that is not dead yet
+  function getNextLivingPlayerIdx() {
+    for (let c = 1; c < players.length; c++) {
+      const nextPlayerIdx = (currentPlayerIdx + c) % players.length
+
+      if ($store.players[nextPlayerIdx].hp > 0) {
+        return nextPlayerIdx
+      }
+    }
+
+    return currentPlayerIdx
+  }
+
   function endTurn() {
     checkWinner()
-    $store.gameData.currentPlayerIdx = (currentPlayerIdx + 1) % players.length
+
+    $store.gameData.currentPlayerIdx = getNextLivingPlayerIdx()
     $store.gameData.rolled = false
     $store.gameData.distance = 0
     $store.gameData.maxDistance = 0
