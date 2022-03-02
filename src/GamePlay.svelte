@@ -354,8 +354,10 @@
           disabled={gameEnded || !isMyTurn || rolled}
           class="btn">Roll 🎲</button
         >
-        <button on:click={resetWalk} disabled={!isMyTurn || !rolled} class="btn"
-          >Reset</button
+        <button
+          on:click={resetWalk}
+          disabled={!isMyTurn || !rolled || distance == 0}
+          class="btn">Reset</button
         >
         {#if rolled}
           <div class="flex flex-col items-center">
