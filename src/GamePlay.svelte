@@ -109,7 +109,7 @@
     switch (player.direction) {
       case "up":
         targetIdx = players.findIndex(
-          (p) => p.x === player.x && p.y === player.y - 1,
+          (p) => p.hp > 0 && p.x === player.x && p.y === player.y - 1,
         )
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
@@ -119,7 +119,7 @@
         break
       case "right":
         targetIdx = players.findIndex(
-          (p) => p.x === player.x + 1 && p.y === player.y,
+          (p) => p.hp > 0 && p.x === player.x + 1 && p.y === player.y,
         )
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
@@ -129,7 +129,7 @@
         break
       case "down":
         targetIdx = players.findIndex(
-          (p) => p.x === player.x && p.y === player.y + 1,
+          (p) => p.hp > 0 && p.x === player.x && p.y === player.y + 1,
         )
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
@@ -139,7 +139,7 @@
         break
       case "left":
         targetIdx = players.findIndex(
-          (p) => p.x === player.x - 1 && p.y === player.y,
+          (p) => p.hp > 0 && p.x === player.x - 1 && p.y === player.y,
         )
         if (targetIdx != -1) {
           players[targetIdx].hp -= 1
