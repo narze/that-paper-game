@@ -3,7 +3,7 @@ import { derived, writable } from "svelte/store"
 const isBrowser = typeof window !== "undefined"
 
 const href = writable(
-  isBrowser ? window.location.href : "https://thwordle.vercel.app",
+  isBrowser ? window.location.href : "https://that-paper-game.narze.live",
 )
 
 const URL = isBrowser ? window.URL : require("url").URL
