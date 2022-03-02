@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { GamePlayer, svelteStore } from "./lib/synced-store"
+  import SVGIcon from "./lib/SVGIcon.svelte"
   import { player } from "./lib/player-store"
 
   export let store: typeof svelteStore
@@ -351,14 +352,21 @@
         <button
           on:click={rollDice}
           disabled={gameEnded || !isMyTurn || rolled}
-          class="btn">Roll</button
+          class="btn">Roll 🎲</button
         >
         <button on:click={resetWalk} disabled={!isMyTurn || !rolled} class="btn"
           >Reset</button
         >
-
         {#if rolled}
-          <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
+          <div class="flex flex-col items-center">
+            <SVGIcon
+              class="mt-2"
+              name={`dice_${maxDistance}`}
+              width={"3rem"}
+              height={"3rem"}
+            />
+            <div class="mt-4 text-xl">{distance}/{maxDistance ?? ""}</div>
+          </div>
         {/if}
       </div>
     </div>
