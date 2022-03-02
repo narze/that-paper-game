@@ -19,6 +19,8 @@ export interface GamePlayer {
   direction?: "up" | "down" | "left" | "right"
   color?: string
   hp?: number
+  admin?: boolean
+  enteredAt?: number
 }
 
 export enum GameState {

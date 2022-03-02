@@ -39,6 +39,8 @@
       $store.players.push({
         id: player.id,
         name: player.name,
+        admin: player.admin,
+        enteredAt: player.enteredAt,
       })
     })
 

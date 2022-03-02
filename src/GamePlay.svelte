@@ -25,7 +25,7 @@
     left: "◀️",
   }
 
-  let map: boolean[][] = generateSimpleMap()
+  const map: boolean[][] = $store.gameData.map
 
   $: mapWithPlayers = map.map((row, y) =>
     row.map((hole, x) => ({
