@@ -66,7 +66,7 @@
 <div class="flex flex-col">
   <div class="grid place-items-center">
     <div class="flex flex-col gap-6">
-      <h2 class="text-4xl font-ubuntu text-blue-500 font-bold">
+      <h2 class="text-xl px-12 font-ubuntu text-blue-500 font-bold">
         ⚙ Preferences
       </h2>
       <div class="flex flex-col gap-3">
