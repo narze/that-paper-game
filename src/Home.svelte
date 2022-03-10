@@ -4,6 +4,7 @@
   import Room from "./Room.svelte"
   import url from "./lib/url"
   import NavBar from "./NavBar.svelte"
+  import Discover from "./Discover.svelte"
 
   $: roomFragment = $url.hash.split(["#/rooms/"])[1]
   $: roomId = roomFragment?.split("/")[0]
@@ -14,6 +15,10 @@
     window.location.hash = `#/rooms/${newRoomId}/create`
   }
 
+  function discoverRoom() {
+    window.location.hash = `#/rooms/discovery`
+  }
+
   function joinRoom() {
     if (!roomId) {
       return alert("Invalid room ID")
@@ -22,7 +27,9 @@
   }
 </script>
 
-{#if $url.hash.indexOf("#/rooms/") === 0 || $url.hash === "#/"}
+{#if $url.hash.indexOf("#/rooms/discovery") === 0}
+  <Discover />
+{:else if $url.hash.indexOf("#/rooms/") === 0 || $url.hash === "#/"}
   <Room {roomId} {createRoom} />
 {:else}
   <main class="grid h-screen place-items-center">
@@ -44,10 +51,18 @@
             on:click={joinRoom}>JOIN</button
           >
         </div>
-        <button
-          class="w-full rounded-lg bg-gradient-to-r from-blue-500 to-violet-500 text-white font-bold font-ubuntu px-4 py-2 tracking-widest active:scale-90 duration-200"
-          on:click={createNewRoom}>CREATE NEW ROOM</button
-        >
+        <div class="flex flex-row gap-2">
+          <button
+            class="w-full rounded-lg bg-gradient-to-r from-blue-500 to-violet-500 text-white font-bold font-ubuntu px-4 py-2 tracking-widest active:scale-90 duration-200"
+            on:click={discoverRoom}
+          >
+            ROOM DISCOVERY
+          </button>
+          <button
+            class="w-full rounded-lg bg-gradient-to-r from-blue-500 to-violet-500 text-white font-bold font-ubuntu px-4 py-2 tracking-widest active:scale-90 duration-200"
+            on:click={createNewRoom}>CREATE NEW ROOM</button
+          >
+        </div>
       </div>
     </div>
   </main>
