@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { onMount, onDestroy } from "svelte"
-  import { svelteStore, connectRoom, GameState } from "./lib/synced-store"
+  import { svelteStore, GameState } from "./lib/synced-store"
 
   import NavBar from "./NavBar.svelte"
+  import { store } from "./lib/synced-store"
 
   export let roomId = [
     { id: "2RiDxgedP3wXEi2eCs2ci" },
     { id: "Poe1gedP3wXEi2eCs8hrt" },
   ]
   export let createRoom: boolean
-
+  const playerCount = store.players.length
   $: gameState = $svelteStore.gameData.state || GameState.Waiting
 
   let enteredRoom = false
@@ -39,6 +39,7 @@
           class="text-2xl font-bold font-ubuntu text-white bg-gradient-to-r from-blue-500 to-violet-500 rounded-lg px-4 py-2 shadow-lg active:scale-90 duration-200"
         >
           <p>{room.id}</p>
+          <p class="text-base">{playerCount} players</p>
         </div>
       {/each}
     </div>
